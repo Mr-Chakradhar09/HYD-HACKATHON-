@@ -1,0 +1,4 @@
+com\inventory\auth\UserControllerTest.class
+com\inventory\auth\AuthServiceTest.class
+com\inventory\auth\AuthControllerTest.class
+com\inventory\auth\JwtTokenProviderTest.class

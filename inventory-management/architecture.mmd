@@ -1,0 +1,31 @@
+graph TD
+    Client[React Frontend / inventory-ui] -->|HTTP / JSON| Gateway[API Gateway: Port 8080]
+    
+    %% Service Discovery & Config
+    Gateway -.->|Resolve Services| Eureka[Eureka Server: Port 8761]
+    
+    %% Internal Routing
+    Gateway --> Auth[Auth Service: Port 8081]
+    Gateway --> Product[Product Service: Port 8082]
+    Gateway --> Warehouse[Warehouse Service: Port 8083]
+    Gateway --> Inventory[Inventory Service: Port 8084]
+    Gateway --> Replenish[Replenishment Service: Port 8085]
+    Gateway --> Reporting[Reporting Service: Port 8086]
+    Gateway --> Notification[Notification Service: Port 8087]
+    
+    %% Config Server
+    Auth -.->|Fetch Config| Config[Config Server: Port 8888]
+    Product -.->|Fetch Config| Config
+    Warehouse -.->|Fetch Config| Config
+    Inventory -.->|Fetch Config| Config
+    Replenish -.->|Fetch Config| Config
+    Reporting -.->|Fetch Config| Config
+    Notification -.->|Fetch Config| Config
+
+    %% Database connections
+    Auth & Product & Warehouse & Inventory & Replenish & Reporting -->|JPA / Hibernate| MySQL[(MySQL Database)]
+
+    %% Event Broker
+    Inventory -->|Publish: inventory-updated, stock-transferred| Kafka[(Kafka Message Broker)]
+    Replenish -->|Publish: purchase-request-created| Kafka
+    Kafka -->|Consume Events| Notification
