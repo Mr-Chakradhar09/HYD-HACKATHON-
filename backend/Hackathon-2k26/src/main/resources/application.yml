@@ -21,7 +21,7 @@ spring:
       hibernate:
         format_sql: true
 
-  # Spring AI (Google GenAI Gemini) Configuration api key::AQ.Ab8RN6KlN_u4eiOgO1nLieF4SrTbhnfEfO76q7rZtQ1HGnMyDg
+  # Spring AI (Google GenAI Gemini) Configuration 
   ai:
     google:
       genai:
