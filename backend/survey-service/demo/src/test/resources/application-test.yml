@@ -1,0 +1,26 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  kafka:
+    listener:
+      auto-startup: false
+  eureka:
+    client:
+      enabled: false
+
+security:
+  jwt:
+    secret: 407f3f124619ee654e954ef5fcd91ffb9e6e88fa7b78f4be2b8bc5b48bc29737
+    expiration: 3600000
+    header: Authorization
+    prefix: "Bearer "

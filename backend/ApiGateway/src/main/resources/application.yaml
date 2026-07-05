@@ -1,0 +1,101 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ApiGateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      routes:
+        # Core service routes
+        - id: auth-route
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+        - id: users-route
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+        - id: surveys-route
+          uri: lb://SURVEY-SERVICE
+          predicates:
+            - Path=/api/surveys/**
+        - id: questions-route
+          uri: lb://SURVEY-SERVICE
+          predicates:
+            - Path=/api/questions/**
+        - id: responses-route
+          uri: lb://SURVEY-SERVICE
+          predicates:
+            - Path=/api/responses/**
+        - id: drafts-route
+          uri: lb://SURVEY-SERVICE
+          predicates:
+            - Path=/api/draft-questions/**
+        - id: reporting-route
+          uri: lb://REPORTING-SERVICE
+          predicates:
+            - Path=/api/reports/**
+
+        # Swagger Docs routing with path rewrites
+        - id: auth-docs
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth-service/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+        - id: user-docs
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+        - id: survey-docs
+          uri: lb://SURVEY-SERVICE
+          predicates:
+            - Path=/survey-service/v3/api-docs
+          filters:
+            - SetPath=/api-docs
+        - id: reporting-docs
+          uri: lb://REPORTING-SERVICE
+          predicates:
+            - Path=/reporting-service/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+        - id: ai-docs
+          uri: lb://AI-SERVICE
+          predicates:
+            - Path=/ai-service/v3/api-docs
+          filters:
+            - SetPath=/api-docs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Auth Service
+        url: /auth-service/v3/api-docs
+      - name: User Service
+        url: /user-service/v3/api-docs
+      - name: Survey Service
+        url: /survey-service/v3/api-docs
+      - name: Reporting Service
+        url: /reporting-service/v3/api-docs
+      - name: AI Service
+        url: /ai-service/v3/api-docs

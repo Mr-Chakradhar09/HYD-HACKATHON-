@@ -1,0 +1,666 @@
+{
+  "info": {
+    "_postman_id": "76d8b948-4357-4bde-8f83-397cf1e4a6a1",
+    "name": "Employee Pulse Survey Platform - Survey Service",
+    "description": "Postman Collection for verifying and testing the Survey Service Microservice. Uses Bearer Token authorization with a pre-configured environmental host variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Simulators (JWT Generation Hints)",
+      "item": [
+        {
+          "name": "Token Info Guide",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://jwt.io?info=Generate JWT tokens for roles: GLOBAL_HR, HR, or EMPLOYEE. Use secret configured in application.yml. Add claims: 'userId', 'role', and 'location'.",
+              "protocol": "https",
+              "host": ["jwt", "io"],
+              "query": [
+                {
+                  "key": "info",
+                  "value": "Generate JWT tokens for roles: GLOBAL_HR, HR, or EMPLOYEE. Use secret configured in application.yml. Add claims: 'userId', 'role', and 'location'."
+                }
+              ]
+            },
+            "description": "Instructions for creating testing JWT tokens locally matching the security signature filters."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1. Questions API",
+      "item": [
+        {
+          "name": "Create Question (GLOBAL_HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{global_hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionText\": \"How satisfied are you with the remote working resources and support?\",\n  \"category\": \"WORKFLOW\",\n  \"questionType\": \"RATING\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions?page=0&size=20&sort=id,desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions by Version",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions?version=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Question by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Question (GLOBAL_HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{global_hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionText\": \"I have access to training resources that help me do my job effectively.\",\n  \"category\": \"GROWTH\",\n  \"questionType\": \"RATING\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question (GLOBAL_HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{global_hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Surveys API",
+      "item": [
+        {
+          "name": "Create Survey (HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"July 2026 Pulse Survey - New York\",\n  \"month\": \"July\",\n  \"year\": 2026,\n  \"location\": \"New York\",\n  \"version\": 1,\n  \"questionIds\": [1, 2, 3, 14, 15]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Surveys (Filtered by Role Location)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys?location=New York&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys"],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "New York"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Survey by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Survey Draft",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"July 2026 Pulse Survey - New York (Updated)\",\n  \"month\": \"July\",\n  \"year\": 2026,\n  \"location\": \"New York\",\n  \"version\": 1,\n  \"questionIds\": [1, 2, 3, 14, 15, 16]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Link Questions to Survey",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[1, 2, 14, 15, 30, 45]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/1/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "1", "questions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish Survey (HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/1/publish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "1", "publish"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close Survey (HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/1/close",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "1", "close"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Survey (EMPLOYEE)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "active"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Responses API",
+      "item": [
+        {
+          "name": "Submit Response (EMPLOYEE)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"surveyId\": 1,\n  \"answers\": [\n    {\n      \"questionId\": 1,\n      \"rating\": 5,\n      \"comment\": \"Outstanding support from my manager.\"\n    },\n    {\n      \"questionId\": 2,\n      \"rating\": 4,\n      \"comment\": \"Everything is great.\"\n    },\n    {\n      \"questionId\": 14,\n      \"rating\": 3,\n      \"comment\": \"Workload has been a bit high lately.\"\n    },\n    {\n      \"questionId\": 15,\n      \"comment\": \"Need more documentation on team processes.\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/responses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "responses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Survey Report (HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/responses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "responses", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. AI & Draft Questions API",
+      "item": [
+        {
+          "name": "Generate AI Questions (HR/GLOBAL_HR)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/surveys/1/generate-ai-questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "surveys", "1", "generate-ai-questions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Draft Questions",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/draft-questions?status=PENDING",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "draft-questions"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit Draft Question",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionText\": \"I have access to the specific resources needed to work effectively from my remote location.\",\n  \"category\": \"WORKFLOW\",\n  \"questionType\": \"RATING\",\n  \"reason\": \"Responses showed high friction regarding remote support.\",\n  \"confidence\": 0.95,\n  \"status\": \"PENDING\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/draft-questions/1/edit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "draft-questions", "1", "edit"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Draft Question",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/draft-questions/1/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "draft-questions", "1", "approve"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Draft Question",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{hr_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/draft-questions/1/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "draft-questions", "1", "reject"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "global_hr_token",
+      "value": "paste_jwt_here"
+    },
+    {
+      "key": "hr_token",
+      "value": "paste_jwt_here"
+    },
+    {
+      "key": "employee_token",
+      "value": "paste_jwt_here"
+    }
+  ]
+}
