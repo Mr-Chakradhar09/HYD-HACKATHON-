@@ -21,11 +21,11 @@ spring:
       hibernate:
         format_sql: true
 
-  # Spring AI (Google GenAI Gemini) Configuration
+  # Spring AI (Google GenAI Gemini) Configuration api key::AQ.Ab8RN6KlN_u4eiOgO1nLieF4SrTbhnfEfO76q7rZtQ1HGnMyDg
   ai:
     google:
       genai:
-        api-key: ${GEMINI_API_KEY:AQ.Ab8RN6KlN_u4eiOgO1nLieF4SrTbhnfEfO76q7rZtQ1HGnMyDg}
+        api-key: YOUR_API_KEY_HERE
         chat:
           options:
             model: gemini-2.5-flash
