@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: notification-service
+eureka:
+  client:
+    enabled: false
+kafka:
+  bootstrap-servers: localhost:9092
