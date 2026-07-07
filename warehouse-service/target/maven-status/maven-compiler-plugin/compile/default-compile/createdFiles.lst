@@ -1,7 +1,0 @@
-com\inventory\warehouse\repository\WarehouseRepository.class
-com\inventory\warehouse\WarehouseServiceApplication.class
-com\inventory\warehouse\controller\WarehouseController.class
-com\inventory\warehouse\dto\WarehouseRequest.class
-com\inventory\warehouse\dto\WarehouseResponse.class
-com\inventory\warehouse\service\WarehouseService.class
-com\inventory\warehouse\entity\Warehouse.class

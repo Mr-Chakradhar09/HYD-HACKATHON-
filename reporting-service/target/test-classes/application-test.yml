@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: reporting-service
-eureka:
-  client:
-    enabled: false
-inventory:
-  service:
-    url: http://localhost:8084
