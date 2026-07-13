@@ -10,6 +10,7 @@ for %%s in (
     "replenishment-service"
     "reporting-service"
     "notification-service"
+    "admin-server"
 ) do (
     echo Starting %%~s...
     start "%%~s" cmd /c "cd /d "%~dp0%%~s" && mvn spring-boot:run -DskipTests"

@@ -16,15 +16,9 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-REM ---- Start MySQL via Docker ----
-echo [1/7] Starting MySQL via Docker...
-docker compose -f "%ROOT_DIR%docker-compose.yml" up -d mysql
-if %ERRORLEVEL% neq 0 (
-    echo [WARN] Docker not available or MySQL start failed. Ensure MySQL is running manually.
-) else (
-    echo [OK] MySQL started.
-    timeout /t 10 /nobreak >nul
-)
+REM ---- Database Startup Placeholder ----
+echo [1/8] Using native database (Make sure it is running!)
+timeout /t 2 /nobreak >nul
 
 REM ---- Start Eureka Server ----
 echo [2/7] Starting Eureka Server...
@@ -71,8 +65,13 @@ echo [6/7] Starting Notification Service...
 start "Notification Service" cmd /c "cd /d "%ROOT_DIR%notification-service" && mvn spring-boot:run %MVNW_OPTS%"
 timeout /t 8 /nobreak >nul
 
+REM ---- Start Admin Server ----
+echo [7/8] Starting Admin Server...
+start "Admin Server" cmd /c "cd /d "%ROOT_DIR%admin-server" && mvn spring-boot:run %MVNW_OPTS%"
+timeout /t 10 /nobreak >nul
+
 REM ---- Start API Gateway ----
-echo [7/7] Starting API Gateway...
+echo [8/8] Starting API Gateway...
 start "API Gateway" cmd /c "cd /d "%ROOT_DIR%api-gateway" && mvn spring-boot:run %MVNW_OPTS%"
 
 REM ---- Start Frontend ----
@@ -101,6 +100,7 @@ taskkill /f /fi "WINDOWTITLE eq Inventory Service" >nul 2>nul
 taskkill /f /fi "WINDOWTITLE eq Replenishment Service" >nul 2>nul
 taskkill /f /fi "WINDOWTITLE eq Reporting Service" >nul 2>nul
 taskkill /f /fi "WINDOWTITLE eq Notification Service" >nul 2>nul
+taskkill /f /fi "WINDOWTITLE eq Admin Server" >nul 2>nul
 taskkill /f /fi "WINDOWTITLE eq API Gateway" >nul 2>nul
 taskkill /f /fi "WINDOWTITLE eq Frontend" >nul 2>nul
 

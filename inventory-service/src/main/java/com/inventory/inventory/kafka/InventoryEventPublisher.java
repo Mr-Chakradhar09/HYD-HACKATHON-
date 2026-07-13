@@ -29,4 +29,14 @@ public class InventoryEventPublisher {
         );
         kafkaTemplate.send("stock-transferred", message);
     }
+
+    public void publishInventoryReplenished(Long purchaseRequestId) {
+        String message = String.format("{\"purchaseRequestId\":%d,\"status\":\"SUCCESS\"}", purchaseRequestId);
+        kafkaTemplate.send("inventory-replenished", message);
+    }
+
+    public void publishInventoryReplenishmentFailed(Long purchaseRequestId, String reason) {
+        String message = String.format("{\"purchaseRequestId\":%d,\"status\":\"FAILED\",\"reason\":\"%s\"}", purchaseRequestId, reason);
+        kafkaTemplate.send("inventory-replenishment-failed", message);
+    }
 }
