@@ -1,5 +1,0 @@
-com\inventory\inventory\repository\ReservationRepository.class
-com\inventory\inventory\dto\ReservationResponse.class
-com\inventory\inventory\entity\Reservation.class
-com\inventory\inventory\enums\ReservationStatus.class
-com\inventory\inventory\dto\ReservationRequest.class

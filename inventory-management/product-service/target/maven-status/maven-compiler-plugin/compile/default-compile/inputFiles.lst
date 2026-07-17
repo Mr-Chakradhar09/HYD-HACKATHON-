@@ -1,9 +1,0 @@
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\ProductServiceApplication.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\controller\ProductController.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\entity\Product.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\dto\ProductRequest.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\repository\ProductRepository.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\service\ProductService.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\enums\ProductStatus.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\enums\Category.java
-C:\Users\CHAKRADHARBATTULA\inventory-management\product-service\src\main\java\com\inventory\product\dto\ProductResponse.java
