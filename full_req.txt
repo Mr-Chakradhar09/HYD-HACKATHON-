@@ -1,0 +1,2944 @@
+﻿<USER_REQUEST>
+The Auth Service is responsible for:
+Authentication
+Authorization
+User Management
+Role Management
+JWT Token Generation
+Refresh Token Management
+Password Management
+It does not contain any business logic related to products, warehouses, inventory, reports, forecasting, or replenishment.
+
+Business Flow
+Step 1: User Provisioning
+A user cannot directly register into the system.
+An authorized user must first create a pre-registration record.
+Example
+SYSTEM_ADMIN
+        â”‚
+        â–¼
+Creates INVENTORY_MANAGER
+
+INVENTORY_MANAGER
+        â”‚
+        â–¼
+Creates
+â€¢ WAREHOUSE_OPERATOR
+â€¢ PROCUREMENT_MANAGER
+The creator provides:
+Employee Code
+Email
+Assigned Role(s)
+The account is stored with
+Status = PENDING_REGISTRATION
+No password or name is stored at this stage.
+
+Step 2: Registration
+The employee receives the Employee Code and registers.
+Registration Request
+Employee Code
+Email
+Name
+Password
+Confirm Password
+Validation
+Employee Code exists
+Email matches the pre-seeded email
+Status is PENDING_REGISTRATION
+Name is valid
+Password satisfies the password policy
+Password and Confirm Password match
+If validation succeeds:
+Password is encrypted using BCrypt
+Name is saved
+Status changes to ACTIVE
+The account is now ready for login.
+
+Step 3: Login
+Login Request
+Employee Code
+Password
+Validation
+Employee exists
+Status = ACTIVE
+Password is correct
+If successful
+Generate
+Access Token (JWT)
+Refresh Token
+Update
+lastLogin
+Return
+Access Token
+
+Refresh Token
+
+Step 4: Accessing Protected APIs
+Frontend
+â†“
+API Gateway
+â†“
+Requested Microservice
+â†“
+JWT Validation
+â†“
+RBAC Validation
+â†“
+Business Logic
+Every microservice validates the JWT independently.
+No shared SecurityContext.
+No gateway-side authentication hacks.
+
+Step 5: Refresh Token
+When Access Token expires
+Frontend
+â†“
+Refresh Token API
+â†“
+Validate Refresh Token
+â†“
+Generate New JWT
+â†“
+Return New Access Token
+The user does not need to log in again.
+
+Step 6: Logout
+User
+â†“
+Logout
+â†“
+Invalidate Refresh Token
+â†“
+Success
+Access Token expires naturally.
+
+Step 7: Change Password
+Request
+Old Password
+
+New Password
+
+Confirm Password
+Validation
+Old password matches
+New password differs from old password
+Password policy is satisfied
+Confirmation matches
+If successful
+Password is encrypted and updated.
+Optionally invalidate all refresh tokens to require fresh logins on other devices.
+
+Step 8: Deactivate User
+Instead of deleting
+DELETE USER
+The account becomes
+Status = INACTIVE
+Inactive users
+Cannot login
+Cannot register again
+Remain in the database for auditing
+
+User Status
+PENDING_REGISTRATION
+
+ACTIVE
+
+INACTIVE
+PENDING_REGISTRATION
+Pre-seeded
+Not registered
+Cannot login
+ACTIVE
+Fully registered
+Can login
+Can use the system
+INACTIVE
+Disabled
+Cannot login
+Cannot register again
+
+Role Hierarchy
+SYSTEM_ADMIN
+        â”‚
+        â–¼
+INVENTORY_MANAGER
+      /          \
+     â–¼            â–¼
+WAREHOUSE_OPERATOR    PROCUREMENT_MANAGER
+
+Role Permissions
+SYSTEM_ADMIN
+Can
+Create any user
+Assign any role
+Update any user
+Deactivate any user
+
+INVENTORY_MANAGER
+Can
+Create
+WAREHOUSE_OPERATOR
+PROCUREMENT_MANAGER
+Update
+WAREHOUSE_OPERATOR
+PROCUREMENT_MANAGER
+Cannot
+Create SYSTEM_ADMIN
+Create INVENTORY_MANAGER
+Modify SYSTEM_ADMIN
+Modify INVENTORY_MANAGER
+
+WAREHOUSE_OPERATOR
+Cannot create or manage users.
+
+PROCUREMENT_MANAGER
+Cannot create or manage users.
+
+Multiple Roles
+A user may possess multiple roles.
+Examples
+WAREHOUSE_OPERATOR
+
+PROCUREMENT_MANAGER
+Authorization is evaluated using all assigned roles.
+
+Password Policy
+Minimum requirements
+8 characters
+One uppercase letter
+One lowercase letter
+One digit
+One special character
+
+Audit Fields
+Every user stores
+createdBy
+
+createdAt
+
+updatedBy
+
+updatedAt
+These fields support traceability and administrative auditing.
+
+Unique Constraints
+The following values must be unique:
+Employee Code
+Email
+
+Soft Delete
+Users are never physically removed.
+Instead
+status = INACTIVE
+
+Default System Admin
+On application startup
+Check
+
+Does SYSTEM_ADMIN exist?
+
+        â”‚
+  Yes   â”‚   No
+        â”‚
+        â–¼
+
+Do Nothing
+
+OR
+
+Create Default Admin
+This initialization is idempotent and runs only when needed.
+
+JWT Contents
+The access token should contain only the essential identity and authorization claims:
+userId
+
+employeeCode
+
+email
+
+roles
+This keeps tokens compact while providing all information required for authentication and RBAC.
+
+Refresh Token
+Each successful login generates
+Access Token
+
+Refresh Token
+The Refresh Token is stored securely by the Auth Service and used to issue new Access Tokens without requiring the user to authenticate again.
+
+Database Design (Conceptual)
+The Auth Service owns:
+users
+
+roles
+
+user_roles
+
+refresh_tokens
+No other microservice should access or modify these tables directly.
+
+Security Principles
+BCrypt password hashing
+JWT-based authentication
+Role-Based Access Control (RBAC)
+Role hierarchy enforcement
+Database-per-service ownership
+Soft delete for users
+Stateless access tokens
+Refresh token lifecycle management
+
+Microservice Responsibility
+The Auth Service is the single source of truth for:
+Users
+Credentials
+Roles
+Authentication
+Authorization
+Refresh Tokens
+It is not responsible for:
+Products
+Warehouses
+Inventory
+Stock movements
+Forecasting
+Reporting
+Procurement
+
+Complete Authentication Flow
+SYSTEM_ADMIN / INVENTORY_MANAGER
+                â”‚
+                â–¼
+      Pre-seed Employee
+(Employee Code + Email + Role)
+                â”‚
+                â–¼
+   Status = PENDING_REGISTRATION
+                â”‚
+                â–¼
+      Employee Registers
+(Name + Password)
+                â”‚
+                â–¼
+         Status = ACTIVE
+                â”‚
+                â–¼
+             Login
+                â”‚
+                â–¼
+ Access Token + Refresh Token
+                â”‚
+                â–¼
+     Access Protected APIs
+                â”‚
+                â–¼
+        Refresh Token
+      (when Access Token expires)
+                â”‚
+                â–¼
+          Continue Working
+                â”‚
+                â–¼
+             Logout
+                â”‚
+                â–¼
+   Refresh Token Invalidated
+
+Auth Service Scope (Frozen)
+We have finalized the Auth Service with the following features:
+âœ… Controlled user provisioning (pre-seeded registration)
+âœ… Self-registration only for pre-approved employees
+âœ… JWT authentication
+âœ… Refresh token support
+âœ… Logout
+âœ… Change password
+âœ… Multiple roles per user
+âœ… Role hierarchy with assignment validation
+âœ… Account statuses (PENDING_REGISTRATION, ACTIVE, INACTIVE)
+âœ… Password policy enforcement
+âœ… Audit fields
+âœ… Unique employee code and email
+âœ… Soft delete
+âœ… Default SYSTEM_ADMIN initialization
+Purpose
+The Product Service is the Master Data Service responsible for maintaining all product-related information.
+It is the single source of truth for product metadata.
+It does not maintain inventory, warehouse, stock movements, or purchasing information.
+
+Responsibilities
+The Product Service is responsible for:
+Product Management
+Category Management
+Product Search
+Product Filtering
+Product Sorting
+Product Pagination
+Product Activation / Deactivation
+Category Activation / Deactivation
+Product Validation
+Default Master Data Initialization
+Publishing Product Events
+
+Product Lifecycle
+Create Product
+      â”‚
+      â–¼
+   ACTIVE
+      â”‚
+      â–¼
+Update Product
+      â”‚
+      â–¼
+ INACTIVE
+Products are never physically deleted.
+
+Category Lifecycle
+Application Starts
+        â”‚
+        â–¼
+Initialize Default Categories
+        â”‚
+        â–¼
+Create Category
+        â”‚
+        â–¼
+Update Category
+        â”‚
+        â–¼
+INACTIVE
+Categories are also soft deleted.
+
+Default Categories
+When Product Service starts for the first time:
+If the category table is empty, insert:
+Category
+Electronics
+Furniture
+Office Supplies
+Networking
+Accessories
+Stationery
+Others
+
+Status of all categories:
+ACTIVE
+
+Protected "Others" Category
+The Others category is reserved.
+Rules:
+Cannot rename
+Cannot deactivate
+Cannot delete
+Purpose:
+Allows products to be created immediately when no suitable category exists.
+
+Default Units
+Supported Units:
+PIECE
+
+BOX
+
+PACK
+
+SET
+
+DOZEN
+
+KG
+
+GRAM
+
+LITER
+
+METER
+These remain constant and are implemented as an enum for Version 1.
+
+Product Information
+Each product contains only its own information.
+SKU
+Barcode (Optional)
+Product Name
+Description
+Brand
+Category
+Unit
+Price
+Status
+Image URL (Optional)
+
+Product Status
+ACTIVE
+
+INACTIVE
+
+Category Status
+ACTIVE
+
+INACTIVE
+
+Product Creation Flow
+SYSTEM_ADMIN / INVENTORY_MANAGER
+
+        â”‚
+        â–¼
+
+Create Product
+
+        â”‚
+
+Validate
+
+â€¢ SKU Required
+â€¢ SKU Unique
+â€¢ Barcode Unique (if provided)
+â€¢ Product Name Required
+â€¢ Brand Required
+â€¢ Category Exists
+â€¢ Category ACTIVE
+â€¢ Unit Valid
+â€¢ Price > 0
+
+        â”‚
+
+Save Product
+
+        â”‚
+
+Publish ProductCreated Event
+
+        â”‚
+
+Status = ACTIVE
+
+Product Update Flow
+Allowed Updates:
+Name
+Description
+Brand
+Category
+Unit
+Price
+Image URL
+Not Allowed:
+SKU
+SKU is immutable after creation.
+Every update:
+Performs optimistic locking validation
+Publishes a ProductUpdated event
+
+Product Deactivation Flow
+Deactivate Product
+
+        â”‚
+
+Call Inventory Service
+
+        â”‚
+
+Any Stock Exists?
+
+      /      \
+
+    YES      NO
+
+    â”‚         â”‚
+
+Reject    Update Status
+
+              â”‚
+
+         INACTIVE
+
+              â”‚
+
+ Publish ProductDeactivated Event
+A product cannot be deactivated while stock still exists.
+
+Category Creation Flow
+Create Category
+
+        â”‚
+
+Normalize Name
+
+Trim Spaces
+
+Convert for comparison
+
+Ignore Case
+
+        â”‚
+
+Duplicate?
+
+      /      \
+
+    YES      NO
+
+    â”‚         â”‚
+
+ Reject    Save Category
+Duplicate examples:
+Electronics
+
+electronics
+
+ ELECTRONICS
+
+Electronics
+All represent the same category.
+
+Category Deactivation Flow
+Deactivate Category
+
+        â”‚
+
+Any ACTIVE Product Using Category?
+
+      /      \
+
+    YES      NO
+
+    â”‚         â”‚
+
+ Reject    INACTIVE
+The protected Others category can never be deactivated.
+
+Search
+Supported Search Fields
+SKU
+Product Name
+Brand
+Category
+Barcode
+Users may search using any combination of these.
+
+Filtering
+Supported Filters
+Category
+Brand
+Status
+Unit
+Price Range
+Example
+Category = Electronics
+
+Brand = Dell
+
+Status = ACTIVE
+
+Price >= 50000
+
+Price <= 100000
+Filters may be combined.
+
+Pagination
+Every listing endpoint supports:
+page
+
+size
+Example
+page=0
+
+size=20
+
+Sorting
+Supported Sort Fields
+Product Name
+SKU
+Brand
+Category
+Price
+Created Date
+Updated Date
+Supported Directions
+ASC
+
+DESC
+Example
+Sort by Name ASC
+
+Sort by Price DESC
+
+Sort by Created Date DESC
+Default Sorting
+Product Name ASC
+This provides predictable results while allowing flexible client-side control.
+
+Validation Rules
+Product
+SKU Required
+SKU Unique
+SKU Immutable
+Product Name Required
+Brand Required
+Description Optional
+Barcode Unique (Optional)
+Category Required
+Category ACTIVE
+Unit Required
+Price > 0
+Image URL Optional
+
+Category
+Name Required
+Trim Spaces
+Ignore Case
+Normalize Before Validation
+Unique
+Maximum Length
+
+Audit Fields
+Every Product
+createdBy
+createdAt
+updatedBy
+updatedAt
+Every Category
+createdBy
+createdAt
+updatedBy
+updatedAt
+
+Optimistic Locking
+Every Product maintains a version number.
+Flow:
+User A
+      â”‚
+      â–¼
+Load Product (Version 3)
+
+User B
+      â”‚
+      â–¼
+Load Product (Version 3)
+
+User A Updates
+
+Version â†’ 4
+
+User B Updates
+
+Version mismatch
+
+Reject Update
+This prevents accidental overwrites.
+
+Product Events (Kafka)
+Published Events
+ProductCreated
+
+ProductUpdated
+
+ProductActivated
+
+ProductDeactivated
+
+CategoryCreated
+
+CategoryUpdated
+
+CategoryDeactivated
+Consumers may include:
+Inventory Service
+Reporting Service
+Forecast Service
+
+Roles & Permissions
+Operation
+SYSTEM_ADMIN
+INVENTORY_MANAGER
+WAREHOUSE_OPERATOR
+PROCUREMENT_MANAGER
+Create Category
+âœ…
+âœ…
+âŒ
+âŒ
+Update Category
+âœ…
+âœ…
+âŒ
+âŒ
+View Categories
+âœ…
+âœ…
+âœ…
+âœ…
+Deactivate Category
+âœ…
+âœ…
+âŒ
+âŒ
+Create Product
+âœ…
+âœ…
+âŒ
+âŒ
+Update Product
+âœ…
+âœ…
+âŒ
+âŒ
+View Product
+âœ…
+âœ…
+âœ…
+âœ…
+Search Products
+âœ…
+âœ…
+âœ…
+âœ…
+Filter Products
+âœ…
+âœ…
+âœ…
+âœ…
+Sort Products
+âœ…
+âœ…
+âœ…
+âœ…
+Deactivate Product
+âœ…
+âœ…
+âŒ
+âŒ
+
+
+REST APIs (Conceptual)
+Category
+POST    /api/v1/categories
+
+GET     /api/v1/categories
+
+GET     /api/v1/categories/{id}
+
+PUT     /api/v1/categories/{id}
+
+PATCH   /api/v1/categories/{id}/status
+
+Product
+POST    /api/v1/products
+
+GET     /api/v1/products
+
+GET     /api/v1/products/{id}
+
+PUT     /api/v1/products/{id}
+
+PATCH   /api/v1/products/{id}/status
+
+GET     /api/v1/products/search
+The list/search endpoints support:
+Pagination
+Sorting
+Filtering
+
+Database Ownership
+product_db
+
+products
+
+categories
+Only the Product Service owns and modifies these tables.
+
+Communication
+REST
+Frontend â†’ API Gateway â†’ Product Service
+Kafka
+Publishes product and category events
+                    Product Service Starts
+                             â”‚
+                             â–¼
+               Are Categories Already Present?
+                     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    Yes               No
+                     â”‚                 â”‚
+                     â–¼                 â–¼
+              Continue Startup   Insert Default Categories
+                     â”‚                 â”‚
+                     â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                              â–¼
+                        System Ready
+                              â”‚
+                              â–¼
+      SYSTEM_ADMIN / INVENTORY_MANAGER Creates Category
+                              â”‚
+                              â–¼
+          Normalize & Validate Category Name
+                              â”‚
+                              â–¼
+                      Category ACTIVE
+                              â”‚
+                              â–¼
+      SYSTEM_ADMIN / INVENTORY_MANAGER Creates Product
+                              â”‚
+                              â–¼
+       Validate SKU, Brand, Category, Unit, Price
+                              â”‚
+                              â–¼
+                     Product ACTIVE
+                              â”‚
+                              â–¼
+               Publish ProductCreated Event
+                              â”‚
+        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+        â–¼               â–¼               â–¼
+    View Product   Search Product   Filter & Sort
+        â”‚
+        â–¼
+   Update Product
+        â”‚
+        â–¼
+Optimistic Lock Validation
+        â”‚
+        â–¼
+Publish ProductUpdated Event
+        â”‚
+        â–¼
+Deactivate Product Request
+        â”‚
+        â–¼
+Check Inventory Service for Existing Stock
+        â”‚
+   â”Œâ”€â”€â”€â”€â”´â”€â”€â”€â”€â”
+   â”‚        	     â”‚
+ Stock    	 No Stock
+ Exists
+   â”‚         	â”‚
+ Reject   Mark INACTIVE
+              	â”‚
+              	â–¼
+ Publish ProductDeactivated Event
+
+
+Purpose
+The Warehouse Service is the master data service responsible for managing warehouses and warehouse employee assignments.
+It is the single source of truth for:
+Warehouse Information
+Warehouse Capacity Configuration
+Warehouse Employee Assignments
+It does not manage:
+Product Information
+Inventory Quantities
+Stock Transfers
+Stock Movements
+Purchase Requests
+Forecasting
+Reports
+
+Responsibilities
+The Warehouse Service is responsible for:
+Warehouse Management
+Warehouse Employee Assignment
+Capacity Configuration
+Search
+Filtering
+Sorting
+Pagination
+Warehouse Activation / Deactivation
+Assignment Activation / Deactivation
+JWT Validation
+RBAC Authorization
+Publishing Kafka Events
+
+Complete Business Flow
+                 Warehouse Service Starts
+                           â”‚
+                           â–¼
+                Initialize Security Components
+                           â”‚
+                           â–¼
+                    Service Ready
+                           â”‚
+                           â–¼
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                  CREATE WAREHOUSE
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Client
+      â”‚
+      â–¼
+API Gateway
+      â”‚
+      â–¼
+Warehouse Service
+      â”‚
+      â–¼
+Validate JWT
+      â”‚
+      â–¼
+Check Roles
+(SYSTEM_ADMIN / INVENTORY_MANAGER)
+      â”‚
+      â–¼
+Validate Warehouse
+      â”‚
+      â–¼
+Warehouse Code Unique?
+      â”‚
+ â”Œâ”€â”€â”€â”€â”´â”€â”€â”€â”€â”
+ â”‚         â”‚
+No        Yes
+ â”‚         â”‚
+Reject   Save Warehouse
+            â”‚
+            â–¼
+     Status = ACTIVE
+            â”‚
+            â–¼
+Publish WarehouseCreated Event
+            â”‚
+            â–¼
+Return Response
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+              ASSIGN EMPLOYEE
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+SYSTEM_ADMIN / INVENTORY_MANAGER
+
+      â”‚
+      â–¼
+
+Select Warehouse
+
+      â”‚
+
+Employee Code
+
+      â”‚
+
+Assignment Role
+
+      â”‚
+
+Call Auth Service
+
+      â”‚
+
+Employee Exists?
+
+      â”‚
+
+Employee ACTIVE?
+
+      â”‚
+
+Required Role Present?
+
+      â”‚
+
+Already Assigned?
+
+      â”‚
+
+Manager Already Exists?
+
+      â”‚
+
+All Valid
+
+      â”‚
+
+Save Assignment
+
+      â”‚
+
+Assignment ACTIVE
+
+      â”‚
+
+Publish WarehouseEmployeeAssigned Event
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                UPDATE WAREHOUSE
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Validate JWT
+
+â†“
+
+RBAC
+
+â†“
+
+Load Warehouse
+
+â†“
+
+Optimistic Lock Check
+
+â†“
+
+Update
+
+â†“
+
+Publish WarehouseUpdated Event
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+              DEACTIVATE WAREHOUSE
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Validate JWT
+
+â†“
+
+RBAC
+
+â†“
+
+Active Assignments?
+
+â†“
+
+YES â†’ Reject
+
+â†“
+
+NO
+
+â†“
+
+Call Inventory Service
+
+â†“
+
+Inventory Exists?
+
+â†“
+
+YES â†’ Reject
+
+â†“
+
+NO
+
+â†“
+
+Status = INACTIVE
+
+â†“
+
+Publish WarehouseDeactivated Event
+
+Warehouse Lifecycle
+Create Warehouse
+        â”‚
+        â–¼
+     ACTIVE
+        â”‚
+        â–¼
+Update Warehouse
+        â”‚
+        â–¼
+   INACTIVE
+Warehouses are never physically deleted.
+
+Assignment Lifecycle
+Assign Employee
+        â”‚
+        â–¼
+     ACTIVE
+        â”‚
+        â–¼
+Update Assignment
+        â”‚
+        â–¼
+   INACTIVE
+Assignments are also soft deleted.
+
+Warehouse Entity
+Warehouse
+
+id
+
+warehouseCode
+(Immutable)
+
+warehouseName
+
+Address
+--------
+addressLine1
+addressLine2
+city
+state
+country
+postalCode
+
+contactNumber
+
+email
+
+maximumCapacity
+
+capacityUnit
+
+status
+
+createdBy
+
+createdAt
+
+updatedBy
+
+updatedAt
+
+version
+
+Address (Embedded)
+Address is an embedded value object.
+Address
+
+addressLine1
+
+addressLine2
+
+city
+
+state
+
+country
+
+postalCode
+Reason:
+No independent lifecycle
+Simpler persistence
+No additional joins
+
+Warehouse Assignment Entity
+WarehouseAssignment
+
+id
+
+warehouseId
+
+employeeCode
+
+assignmentRole
+
+status
+
+assignedBy
+
+assignedAt
+
+updatedBy
+
+updatedAt
+
+version
+
+Assignment Roles
+WAREHOUSE_MANAGER
+
+WAREHOUSE_OPERATOR
+
+PROCUREMENT_MANAGER
+
+Warehouse Status
+ACTIVE
+
+INACTIVE
+
+Assignment Status
+ACTIVE
+
+INACTIVE
+
+Capacity Units
+PIECE
+
+BOX
+
+PACK
+
+SET
+
+DOZEN
+
+KG
+
+GRAM
+
+LITER
+
+METER
+
+Warehouse Creation Validation
+Warehouse Code Required
+Warehouse Code Unique
+Warehouse Code Immutable
+Warehouse Name Required
+Address Required
+Contact Number Valid
+Email Valid
+Maximum Capacity > 0
+Capacity Unit Required
+
+Assignment Validation
+Before saving an assignment:
+JWT must be valid.
+User must have permission.
+Employee must exist.
+Employee must be ACTIVE.
+Employee must have the required role.
+Employee must not already be assigned to another warehouse.
+If assigning a manager, ensure no active manager already exists for the warehouse.
+
+Business Rules
+Warehouse Code
+Cannot be modified after creation.
+Example
+WH-HYD-001
+Always remains the same.
+
+One Active Manager Per Warehouse
+Allowed
+Warehouse A
+
+â†“
+
+EMP1001
+Not Allowed
+Warehouse A
+
+â†“
+
+EMP1001
+
+â†“
+
+EMP1002
+Only one active manager is permitted.
+
+One Employee â†’ One Warehouse
+A user can have only one active warehouse assignment at a time, regardless of assignment type.
+
+Employee Assignment
+Employees are assigned after warehouse creation.
+Creating a warehouse never requires assigning personnel.
+
+Warehouse Deactivation
+A warehouse cannot be deactivated when:
+Active employee assignments exist.
+Inventory Service reports stock is still present.
+
+Search
+Supported fields:
+Warehouse Code
+Warehouse Name
+City
+State
+Country
+
+Filtering
+Supported filters:
+Status
+City
+State
+Country
+Capacity Unit
+Filters may be combined.
+
+Sorting
+Supported fields:
+Warehouse Name
+Warehouse Code
+City
+Maximum Capacity
+Created Date
+Updated Date
+Directions:
+ASC
+
+DESC
+Default:
+Warehouse Name ASC
+
+Pagination
+Supported parameters:
+page
+
+size
+
+Optimistic Locking
+Warehouse
+@Version
+private Long version;
+Assignment
+@Version
+private Long version;
+Prevents concurrent updates from overwriting each other.
+
+JWT Validation Flow
+Every request follows this sequence:
+Client
+
+â†“
+
+API Gateway
+
+â†“
+
+Warehouse Service
+
+â†“
+
+Validate JWT
+
+â†“
+
+Extract Employee Code
+
+â†“
+
+Extract Roles
+
+â†“
+
+Spring Security
+
+â†“
+
+Business Logic
+Each microservice validates JWT independently.
+Warehouse Personnel
+No personnel fields exist inside the Warehouse entity.
+All personnel relationships are managed through WarehouseAssignment.
+Example:
+Warehouse
+
+â†“
+
+WarehouseAssignment
+
+â†“
+
+EMP001
+
+WAREHOUSE_MANAGER
+
+â†“
+
+EMP010
+
+WAREHOUSE_OPERATOR
+
+â†“
+
+EMP011
+
+WAREHOUSE_OPERATOR
+
+â†“
+
+EMP020
+
+PROCUREMENT_MANAGER
+This keeps the design normalized and extensible.
+
+
+Kafka Events
+Published events:
+WarehouseCreated
+
+WarehouseUpdated
+
+WarehouseActivated
+
+WarehouseDeactivated
+
+WarehouseEmployeeAssigned
+
+WarehouseEmployeeUnassigned
+Potential consumers:
+Inventory Service
+Reporting Service
+Forecast Service
+
+REST APIs
+Warehouse
+POST    /api/v1/warehouses
+
+GET     /api/v1/warehouses
+
+GET     /api/v1/warehouses/{id}
+
+PUT     /api/v1/warehouses/{id}
+
+PATCH   /api/v1/warehouses/{id}/status
+
+GET     /api/v1/warehouses/search
+
+Assignments
+POST    /api/v1/warehouses/{warehouseId}/assignments
+
+GET     /api/v1/warehouses/{warehouseId}/assignments
+
+PUT     /api/v1/assignments/{assignmentId}
+
+PATCH   /api/v1/assignments/{assignmentId}/status
+All listing APIs support:
+Pagination
+Filtering
+Sorting
+
+Database Ownership
+warehouse_db
+
+â”œâ”€â”€ warehouses
+â””â”€â”€ warehouse_assignments
+Only the Warehouse Service owns and updates these tables.
+
+Roles & Permissions
+Operation
+SYSTEM_ADMIN
+INVENTORY_MANAGER
+WAREHOUSE_OPERATOR
+PROCUREMENT_MANAGER
+Create Warehouse
+âœ…
+âœ…
+âŒ
+âŒ
+Update Warehouse
+âœ…
+âœ…
+âŒ
+âŒ
+View Warehouse
+âœ…
+âœ…
+âœ…
+âœ…
+Search Warehouse
+âœ…
+âœ…
+âœ…
+âœ…
+Assign Employees
+âœ…
+âœ…
+âŒ
+âŒ
+Update Assignment
+âœ…
+âœ…
+âŒ
+âŒ
+Deactivate Assignment
+âœ…
+âœ…
+âŒ
+âŒ
+Deactivate Warehouse
+âœ…
+âœ…
+âŒ
+âŒ
+
+The Warehouse Service includes:
+âœ… Warehouse Management
+âœ… Embedded Address
+âœ… Capacity Configuration
+âœ… Capacity Units
+âœ… Warehouse Employee Assignment
+âœ… Warehouse Code Immutability
+âœ… One Active Manager per Warehouse
+âœ… One Employee â†’ One Warehouse
+âœ… Assignment Status (ACTIVE / INACTIVE)
+âœ… Assignment Audit Fields
+âœ… JWT Validation
+âœ… RBAC Authorization
+âœ… Search
+âœ… Filtering
+âœ… Sorting
+âœ… Pagination
+âœ… Optimistic Locking
+âœ… Prevent Deactivation with Active Assignments
+âœ… Prevent Deactivation with Existing Inventory
+âœ… Kafka Event Publishing
+âœ… Database-per-Service Architecture
+
+Purpose
+The Inventory Service is the transactional service responsible for maintaining the current inventory state of every product across all warehouses.
+It is the single source of truth for:
+Inventory Quantities
+Warehouse-wise Inventory
+Product-wise Inventory
+Available Stock
+Reserved Stock
+Damaged Stock
+Inventory Adjustments
+Inventory Reservations
+It does not manage:
+Product Information
+Categories
+Warehouse Information
+Employee Assignments
+User Authentication
+Purchase Orders
+Sales Orders
+Stock Movement History
+Demand Forecasting
+Reports
+
+Responsibilities
+The Inventory Service is responsible for:
+Inventory Management
+Stock Availability Management
+Reserved Stock Management
+Damaged Stock Tracking
+Inventory Adjustments
+Inventory Reservation
+Inventory Release
+Warehouse Inventory Lookup
+Product Inventory Lookup
+Search
+Filtering
+Sorting
+Pagination
+JWT Validation
+RBAC Authorization
+Kafka Event Publishing
+Kafka Event Consumption
+Live Inventory Notifications (WebSocket)
+
+Architecture Responsibility
+                   Inventory Service
+
+                 Owns Inventory State
+
+                 Current Stock
+
+                 Available Stock
+
+                 Reserved Stock
+
+                 Damaged Stock
+
+                 Inventory Adjustments
+
+                 Inventory Reservations
+Inventory Service always stores the current state.
+Movement history belongs to the Movement Service.
+
+Communication Architecture
+                   Client
+                       â”‚
+                       â–¼
+                 API Gateway
+                       â”‚
+                       â–¼
+               Inventory Service
+                       â”‚
+         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+         â”‚             â”‚             â”‚
+         â–¼             â–¼             â–¼
+     Product      Warehouse       Auth
+      REST          REST          JWT
+         â”‚
+         â–¼
+     Validate Product
+
+Inventory Service
+
+        â”‚
+
+Publishes Kafka Events
+
+        â”‚
+
+Consumes Movement Events
+
+        â”‚
+
+Pushes Live Updates
+
+        â–¼
+
+WebSocket Dashboard
+Communication Strategy
+REST
+Used for:
+Product validation
+Warehouse validation
+Kafka
+Used for:
+Stock changes
+Inventory synchronization
+Reporting
+Forecasting
+Replenishment
+WebSocket
+Used for:
+Live inventory dashboard
+Real-time stock changes
+gRPC (Optional)
+Used only if future versions require real-time synchronization between geographically distributed warehouses.
+
+Database Ownership
+inventory_db
+
+â”œâ”€â”€ inventories
+
+â”œâ”€â”€ inventory_reservations
+
+â””â”€â”€ inventory_adjustments
+Only the Inventory Service owns these tables.
+No other service may modify them directly.
+
+Complete Business Flow
+                Inventory Service Starts
+                           â”‚
+                           â–¼
+              Initialize Security Components
+                           â”‚
+                           â–¼
+                Initialize Kafka Consumers
+                           â”‚
+                           â–¼
+              Initialize WebSocket Publisher
+                           â”‚
+                           â–¼
+                    Service Ready
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+               INITIAL INVENTORY CREATION
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+SYSTEM_ADMIN / INVENTORY_MANAGER
+
+        â”‚
+        â–¼
+
+Create Inventory
+
+        â”‚
+
+Validate JWT
+
+        â”‚
+
+RBAC
+
+        â”‚
+
+Call Product Service
+
+        â”‚
+
+Product Exists?
+
+        â”‚
+
+Product ACTIVE?
+
+        â”‚
+
+Call Warehouse Service
+
+        â”‚
+
+Warehouse Exists?
+
+        â”‚
+
+Warehouse ACTIVE?
+
+        â”‚
+
+Inventory Already Exists?
+
+      â”Œâ”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”
+      â”‚             â”‚
+     YES           NO
+      â”‚             â”‚
+ Reject Request   Save Inventory
+                     â”‚
+                     â–¼
+Initial Quantity = 0
+Reserved Quantity = 0
+Available Quantity = 0
+Damaged Quantity = 0
+                     â”‚
+                     â–¼
+Status = ACTIVE
+                     â”‚
+                     â–¼
+Publish InventoryCreated Event
+                     â”‚
+                     â–¼
+Return Response
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            INVENTORY UPDATE FROM MOVEMENT
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Movement Service
+
+        â”‚
+
+Creates Movement
+
+        â”‚
+
+Publishes Kafka Event
+
+        â”‚
+
+Inventory Service Consumes Event
+
+        â”‚
+
+Validate Event
+
+        â”‚
+
+Load Inventory
+
+        â”‚
+
+Update Quantities
+
+        â”‚
+
+Optimistic Lock Check
+
+        â”‚
+
+Save Inventory
+
+        â”‚
+
+Publish InventoryUpdated Event
+
+        â”‚
+
+Push WebSocket Notification
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+             INVENTORY RESERVATION
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Client
+
+â†“
+
+API Gateway
+
+â†“
+
+Inventory Service
+
+â†“
+
+Validate JWT
+
+â†“
+
+RBAC
+
+â†“
+
+Load Inventory
+
+â†“
+
+Available Stock Sufficient?
+
+     â”Œâ”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”
+     â”‚             â”‚
+    NO            YES
+     â”‚             â”‚
+ Reject       Reserve Quantity
+                   â”‚
+                   â–¼
+Update Available Stock
+                   â”‚
+                   â–¼
+Publish InventoryReserved Event
+                   â”‚
+                   â–¼
+Push Dashboard Update
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            RELEASE RESERVED STOCK
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Inventory Service
+
+â†“
+
+Load Reservation
+
+â†“
+
+Reservation Exists?
+
+â†“
+
+Reservation ACTIVE?
+
+â†“
+
+Release Quantity
+
+â†“
+
+Update Available Stock
+
+â†“
+
+Publish ReservationReleased Event
+
+â†“
+
+Dashboard Update
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            INVENTORY ADJUSTMENT
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+SYSTEM_ADMIN / INVENTORY_MANAGER
+
+â†“
+
+Validate JWT
+
+â†“
+
+RBAC
+
+â†“
+
+Load Inventory
+
+â†“
+
+Adjustment Reason Required
+
+â†“
+
+Adjustment Valid?
+
+â†“
+
+Save Adjustment
+
+â†“
+
+Update Inventory
+
+â†“
+
+Publish InventoryAdjusted Event
+
+â†“
+
+Push Dashboard Update
+
+Inventory Lifecycle
+Create Inventory
+
+        â”‚
+
+        â–¼
+
+ACTIVE
+
+        â”‚
+
+        â–¼
+
+Update Inventory
+
+        â”‚
+
+        â–¼
+
+Reserve Stock
+
+        â”‚
+
+        â–¼
+
+Release Reservation
+
+        â”‚
+
+        â–¼
+
+Adjust Inventory
+
+        â”‚
+
+        â–¼
+
+ACTIVE
+Inventory records are never deleted.
+
+Inventory Entity
+Inventory
+
+id
+
+productId
+
+warehouseId
+
+currentQuantity
+
+reservedQuantity
+
+availableQuantity
+
+damagedQuantity
+
+status
+
+lastMovementAt
+
+createdBy
+
+createdAt
+
+updatedBy
+
+updatedAt
+
+version
+
+Inventory Reservation Entity
+InventoryReservation
+
+id
+
+inventoryId
+
+referenceNumber
+
+referenceType
+
+reservedQuantity
+
+status
+
+reservedBy
+
+reservedAt
+
+releasedBy
+
+releasedAt
+
+createdAt
+
+updatedAt
+
+version
+
+Inventory Adjustment Entity
+InventoryAdjustment
+
+id
+
+inventoryId
+
+adjustmentType
+
+quantity
+
+reason
+
+remarks
+
+adjustedBy
+
+adjustedAt
+
+createdAt
+
+Inventory Status
+ACTIVE
+
+INACTIVE
+
+Reservation Status
+ACTIVE
+
+RELEASED
+
+EXPIRED
+
+CANCELLED
+
+Adjustment Types
+INCREASE
+
+DECREASE
+
+DAMAGE
+
+CORRECTION
+
+INITIAL_STOCK
+
+CYCLE_COUNT
+
+Quantity Model
+Inventory always maintains four quantities.
+Current Quantity
+
+â†“
+
+Reserved Quantity
+
+â†“
+
+Damaged Quantity
+
+â†“
+
+Available Quantity
+Formula
+Available Quantity =
+Current Quantity
+âˆ’ Reserved Quantity
+âˆ’ Damaged Quantity
+Example
+Current Stock = 150
+
+Reserved = 20
+
+Damaged = 5
+
+Available = 125
+
+Business Rules
+One inventory record exists for each Product + Warehouse combination.
+Product must exist and be ACTIVE.
+Warehouse must exist and be ACTIVE.
+Inventory quantities can never become negative.
+Available Quantity is always calculated, never manually entered.
+Inventory cannot exist without a Product.
+Inventory cannot exist without a Warehouse.
+Only the Movement Service is allowed to change Current Quantity through Kafka events.
+Direct quantity updates through REST are prohibited.
+Reservations reduce Available Quantity but do not change Current Quantity.
+Damaged stock remains part of Current Quantity until disposed of through a movement.
+Inventory adjustments require a mandatory reason.
+Inventory records are never physically deleted.
+All updates use optimistic locking.
+Inventory Creation Validation
+Before an inventory record is created:
+JWT must be valid.
+User must have permission.
+Product must exist.
+Product must be ACTIVE.
+Warehouse must exist.
+Warehouse must be ACTIVE.
+Inventory for the Product + Warehouse combination must not already exist.
+Initial quantity must be zero.
+Status is automatically set to ACTIVE.
+
+Inventory Update Validation
+Inventory quantities cannot be modified directly through REST APIs.
+Every inventory update must originate from the Movement Service through Kafka.
+Before applying an update:
+Movement Event must be valid.
+Inventory record must exist.
+Inventory status must be ACTIVE.
+Product must still exist.
+Warehouse must still exist.
+Quantity after update cannot become negative.
+Optimistic locking validation must succeed.
+
+Reservation Validation
+Before creating a reservation:
+JWT must be valid.
+User must have permission.
+Inventory must exist.
+Inventory must be ACTIVE.
+Reservation quantity must be greater than zero.
+Available quantity must be sufficient.
+Reference number must be unique for the reference type.
+Duplicate active reservation is not allowed.
+
+Reservation Release Validation
+Before releasing reserved inventory:
+Reservation must exist.
+Reservation status must be ACTIVE.
+Release quantity must not exceed reserved quantity.
+Inventory must exist.
+Inventory must be ACTIVE.
+
+Inventory Adjustment Validation
+Before performing an adjustment:
+JWT must be valid.
+User must have permission.
+Inventory must exist.
+Inventory must be ACTIVE.
+Adjustment type must be valid.
+Quantity must be greater than zero.
+Reason is mandatory.
+Remarks are optional.
+Quantity after adjustment must never become negative.
+
+Business Rules
+One Inventory Record
+Only one inventory record may exist for a Product within a Warehouse.
+Allowed
+Warehouse A
+
+â†“
+
+Laptop
+
+â†“
+
+Inventory
+Not Allowed
+Warehouse A
+
+â†“
+
+Laptop
+
+â†“
+
+Inventory
+
+â†“
+
+Inventory
+
+Product + Warehouse Unique
+The following combination must always be unique.
+Product
+
++
+
+Warehouse
+Example
+Dell Laptop
+
++
+
+WH-HYD-001
+Only one inventory record is permitted.
+
+Available Quantity
+Available quantity is always calculated.
+Available =
+Current
+âˆ’ Reserved
+âˆ’ Damaged
+It cannot be updated manually.
+
+Current Quantity
+Current Quantity may only change through Movement Events.
+Allowed
+Movement Service
+
+â†“
+
+Kafka
+
+â†“
+
+Inventory Updated
+Not Allowed
+REST API
+
+â†“
+
+Update Quantity
+
+Reserved Quantity
+Reserved quantity changes only when:
+Reservation Created
+Reservation Released
+Reservation Cancelled
+Reservation Expired
+
+Damaged Quantity
+Damaged quantity changes only when:
+Damage Adjustment
+Disposal Movement
+Correction Adjustment
+
+Inventory Deactivation
+Inventory cannot become INACTIVE while stock exists.
+Current Quantity > 0
+
+â†“
+
+Reject
+Only when:
+Current = 0
+
+Reserved = 0
+
+Damaged = 0
+
+â†“
+
+INACTIVE
+
+Search
+Supported search fields
+Product SKU
+Product Name
+Warehouse Code
+Warehouse Name
+Barcode
+Search may combine multiple fields.
+Example
+Dell
+
+WH-HYD
+
+Filtering
+Supported Filters
+Warehouse
+Product
+Category
+Brand
+Status
+Stock Availability
+Low Stock
+Out of Stock
+Example
+Warehouse = Hyderabad
+
+Category = Electronics
+
+Brand = Dell
+
+Status = ACTIVE
+
+Stock Availability Filters
+Supported
+Available Stock > 0
+
+Out Of Stock
+
+Reserved Stock > 0
+
+Damaged Stock > 0
+
+Low Stock
+
+Sorting
+Supported Fields
+Product Name
+SKU
+Warehouse Name
+Available Quantity
+Current Quantity
+Reserved Quantity
+Damaged Quantity
+Created Date
+Updated Date
+Directions
+ASC
+
+DESC
+Default
+Product Name ASC
+
+Pagination
+Supported Parameters
+page
+
+size
+Example
+page=0
+
+size=20
+
+Optimistic Locking
+Inventory
+@Version
+private Long version;
+Reservation
+@Version
+private Long version;
+Prevents concurrent inventory updates.
+
+JWT Validation Flow
+Every request follows the same sequence.
+Client
+
+â†“
+
+API Gateway
+
+â†“
+
+Inventory Service
+
+â†“
+
+Validate JWT
+
+â†“
+
+Extract Employee Code
+
+â†“
+
+Extract Roles
+
+â†“
+
+Spring Security
+
+â†“
+
+Business Logic
+Every microservice validates JWT independently.
+
+Kafka Events
+Published Events
+InventoryCreated
+
+InventoryUpdated
+
+InventoryReserved
+
+ReservationReleased
+
+ReservationCancelled
+
+ReservationExpired
+
+InventoryAdjusted
+
+InventoryActivated
+
+InventoryDeactivated
+
+Consumed Events
+StockReceived
+
+StockIssued
+
+StockTransferredIn
+
+StockTransferredOut
+
+StockAdjusted
+
+StockReturned
+
+StockDamaged
+These events originate from the Movement Service.
+
+Event Flow
+Movement Service
+
+â†“
+
+Publish StockReceived
+
+â†“
+
+Kafka
+
+â†“
+
+Inventory Service
+
+â†“
+
+Update Inventory
+
+â†“
+
+Publish InventoryUpdated
+
+â†“
+
+Reporting Service
+
+Forecast Service
+
+Replenishment Service
+
+Dashboard
+
+WebSocket Updates
+Every successful inventory update pushes a notification.
+Examples
+Inventory Updated
+
+Reservation Created
+
+Reservation Released
+
+Stock Received
+
+Stock Issued
+
+Adjustment Completed
+Dashboard users receive updates immediately.
+
+REST APIs
+Inventory
+POST   /api/v1/inventories
+
+GET    /api/v1/inventories
+
+GET    /api/v1/inventories/{id}
+
+GET    /api/v1/inventories/search
+
+PATCH  /api/v1/inventories/{id}/status
+
+Reservations
+POST   /api/v1/reservations
+
+GET    /api/v1/reservations
+
+GET    /api/v1/reservations/{id}
+
+PATCH  /api/v1/reservations/{id}/release
+
+PATCH  /api/v1/reservations/{id}/cancel
+
+Adjustments
+POST   /api/v1/adjustments
+
+GET    /api/v1/adjustments
+
+GET    /api/v1/adjustments/{id}
+
+All listing APIs support
+Pagination
+Filtering
+Sorting
+
+Database Ownership
+inventory_db
+
+â”œâ”€â”€ inventories
+
+â”œâ”€â”€ inventory_reservations
+
+â””â”€â”€ inventory_adjustments
+Only the Inventory Service owns and updates these tables.
+
+Roles & Permissions
+Operation
+SYSTEM_ADMIN
+INVENTORY_MANAGER
+WAREHOUSE_OPERATOR
+PROCUREMENT_MANAGER
+Create Inventory
+âœ…
+âœ…
+âŒ
+âŒ
+View Inventory
+âœ…
+âœ…
+âœ…
+âœ…
+Search Inventory
+âœ…
+âœ…
+âœ…
+âœ…
+Reserve Inventory
+âœ…
+âœ…
+âœ…
+âŒ
+Release Reservation
+âœ…
+âœ…
+âœ…
+âŒ
+Create Adjustment
+âœ…
+âœ…
+âŒ
+âŒ
+View Adjustments
+âœ…
+âœ…
+âœ…
+âœ…
+Deactivate Inventory
+âœ…
+âœ…
+âŒ
+âŒ
+
+
+Integration with Other Services
+Auth Service
+REST
+JWT Validation
+RBAC
+
+Product Service
+REST
+Validate Product
+Read Product Details
+Kafka
+ProductDeactivated
+ProductUpdated
+
+Warehouse Service
+REST
+Validate Warehouse
+Kafka
+WarehouseDeactivated
+WarehouseUpdated
+
+Movement Service
+Kafka
+Consumes
+StockReceived
+
+StockIssued
+
+StockTransferred
+
+StockAdjusted
+
+StockReturned
+
+StockDamaged
+Publishes
+InventoryUpdated
+
+Replenishment Service
+Consumes
+InventoryUpdated
+
+InventoryAdjusted
+
+Forecast Service
+Consumes
+InventoryUpdated
+
+Reporting Service
+Consumes
+All Inventory Events
+
+Inventory Service Scope (Frozen)
+The Inventory Service includes:
+âœ… Inventory Management
+âœ… Warehouse-wise Inventory
+âœ… Product-wise Inventory
+âœ… Current Quantity
+âœ… Available Quantity
+âœ… Reserved Quantity
+âœ… Damaged Quantity
+âœ… Inventory Reservation
+âœ… Reservation Release
+âœ… Inventory Adjustments
+âœ… Search
+âœ… Filtering
+âœ… Sorting
+âœ… Pagination
+âœ… Optimistic Locking
+âœ… JWT Validation
+âœ… RBAC Authorization
+âœ… Kafka Event Consumption
+âœ… Kafka Event Publishing
+âœ… WebSocket Notifications
+âœ… Database-per-Service Architecture
+âœ… Integration with Product Service
+âœ… Integration with Warehouse Service
+âœ… Integration with Movement Service
+âœ… Integration with Replenishment Service
+âœ… Integration with Forecast Service
+âœ… Integration with Reporting Service
+Purpose
+The Movement Service is the transactional ledger service responsible for recording every inventory transaction occurring inside the warehouse management system.
+It is the single source of truth for stock movement history.
+Every change in stock quantity must originate from the Movement Service.
+The Movement Service maintains an immutable history of:
+Stock Receipts
+Stock Issues
+Warehouse Transfers
+Returns
+Adjustments
+Damages
+Disposal
+Cycle Counts
+It does not maintain current inventory quantities.
+
+Responsibilities
+The Movement Service is responsible for:
+Stock Movement Creation
+Goods Receipt Processing
+Goods Issue Processing
+Warehouse Transfer Processing
+Stock Return Processing
+Inventory Adjustment Recording
+Damage Recording
+Disposal Recording
+Cycle Count Recording
+Initial Stock Loading
+Movement Number Generation
+Movement Status Management
+Movement Search
+Filtering
+Sorting
+Pagination
+JWT Validation
+RBAC Authorization
+Kafka Event Publishing
+Event Version Management
+Idempotency Handling
+Correlation Tracking
+
+It Does Not Manage
+The Movement Service does not manage:
+Product Information
+Categories
+Warehouse Information
+Employee Management
+User Authentication
+Current Inventory Quantity
+Stock Reservation
+Purchase Orders
+Sales Orders
+Forecasting
+Reporting
+Replenishment Rules
+
+Core Architecture Principle
+Movement Service = Historical Truth
+Inventory Service = Current State
+Example:
+Movement Service
+
+MOV-1001
+
+GOODS_RECEIPT
+
++100 Laptop
+
+
+MOV-1002
+
+GOODS_ISSUE
+
+-20 Laptop
+
+
+MOV-1003
+
+DAMAGE
+
+-5 Laptop
+Inventory Service maintains:
+Laptop Inventory
+
+Current Quantity = 75
+
+Complete Architecture Flow
+                        Client
+                            â”‚
+                            â–¼
+                    Spring Cloud Gateway
+                            â”‚
+                            â–¼
+                    Movement Service
+                            â”‚
+              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+              â”‚             â”‚             â”‚
+              â–¼             â–¼             â–¼
+        Product Service  Warehouse     Auth
+             REST        Service       JWT
+                          REST
+
+
+                    Movement Service
+
+                            â”‚
+
+                            â–¼
+
+                  Create Movement Record
+
+                            â”‚
+
+                            â–¼
+
+                   Status = PENDING
+
+                            â”‚
+
+                            â–¼
+
+                   Publish Kafka Event
+
+                            â”‚
+
+                            â–¼
+
+                  Inventory Service
+
+                            â”‚
+
+                            â–¼
+
+              Update Current Inventory State
+
+                            â”‚
+
+                            â–¼
+
+              Publish InventoryUpdated Event
+
+                            â”‚
+
+        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+        â–¼                   â–¼                  â–¼
+
+ Reporting Service   Forecast Service   Replenishment Service
+
+                            â”‚
+
+                            â–¼
+
+                    WebSocket Dashboard
+
+Communication Strategy
+REST Communication
+Used for synchronous validation.
+Movement Service calls:
+Product Service
+Validate:
+Product exists
+Product ACTIVE
+Product information
+Warehouse Service
+Validate:
+Warehouse exists
+Warehouse ACTIVE
+
+Kafka Communication
+Used for asynchronous processing.
+Movement Service publishes:
+movement.created
+
+movement.completed
+
+movement.failed
+
+movement.transfer
+
+movement.adjustment
+Consumers:
+Inventory Service
+
+Reporting Service
+
+Forecast Service
+
+Replenishment Service
+
+WebSocket Communication
+Used for:
+Live stock movement updates
+Dashboard notifications
+Example:
+Stock Received
+
+Laptop +100
+
+Warehouse HYD-01
+
+Database Ownership
+Movement Service owns:
+movement_db
+
+â””â”€â”€ inventory_movements
+Only Movement Service can:
+Insert movements
+Read movements
+No service can:
+Update movements
+Delete movements
+
+Complete Business Flow
+Movement Service Startup
+             Movement Service Starts
+
+                        â”‚
+
+                        â–¼
+
+        Initialize Security Components
+
+                        â”‚
+
+                        â–¼
+
+        Initialize Kafka Producer
+
+                        â”‚
+
+                        â–¼
+
+        Initialize Event Publisher
+
+                        â”‚
+
+                        â–¼
+
+              Generate Configuration
+
+                        â”‚
+
+                        â–¼
+
+                Service Ready
+
+Goods Receipt Flow
+Example:
+Warehouse receives 500 laptops from supplier.
+INVENTORY_MANAGER
+
+        â”‚
+
+        â–¼
+
+Create Goods Receipt Request
+
+        â”‚
+
+        â–¼
+
+API Gateway
+
+        â”‚
+
+        â–¼
+
+Movement Service
+
+        â”‚
+
+        â–¼
+
+Validate JWT
+
+        
+<truncated 35144 bytes>
+
+NOTE: The output was truncated because it was too long. Use a more targeted query or a smaller range to get the information you need.

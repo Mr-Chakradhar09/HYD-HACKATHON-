@@ -1,0 +1,89 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: warehouse-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/inventory_warehouse_db?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    topics:
+      warehouse-events: warehouse-events
+
+jwt:
+  secret: VGhpc0lzQVN1cGVyU2VjcmV0S2V5Rm9ySldUU2lnbmluZ1RoYXRNdXN0QmVBdExlYXN0MzJCeXRlc0xvbmc=
+  expiration: 86400000
+  
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - feign.FeignException
+        ignoreExceptions:
+          - com.inventory.warehouseservice.exception.EmployeeNotFoundException
+
+  retry:
+    instances:
+      authService:
+        registerHealthIndicator: true
+        maxAttempts: 3
+        waitDuration: 1s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        retryExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - feign.FeignException
+        ignoreExceptions:
+          - com.inventory.warehouseservice.exception.EmployeeNotFoundException
+
+  bulkhead:
+    instances:
+      authService:
+        maxConcurrentCalls: 25
+        maxWaitDuration: 0
+
+  ratelimiter:
+    instances:
+      authService:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+
+  timelimiter:
+    instances:
+      authService:
+        timeoutDuration: 3s
+        cancelRunningFuture: true

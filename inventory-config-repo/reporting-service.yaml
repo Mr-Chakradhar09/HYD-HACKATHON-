@@ -1,0 +1,41 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: reporting-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/inventory_reporting_db?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: reporting-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.inventory.*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: java.util.HashMap
+    topics:
+      inventory-events: inventory-events
+      product-events: product-events
+      movement-events: movement-events
+      replenishment-events: replenishment-events
+      warehouse-events: warehouse-events
+
+jwt:
+  secret: VGhpc0lzQVN1cGVyU2VjcmV0S2V5Rm9ySldUU2lnbmluZ1RoYXRNdXN0QmVBdExlYXN0MzJCeXRlc0xvbmc=
+  expiration: 86400000

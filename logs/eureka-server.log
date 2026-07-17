@@ -1,0 +1,103 @@
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.inventory:eureka-server >---------------------
+[INFO] Building  0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.16:run (default-cli) > test-compile @ eureka-server >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ eureka-server ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ eureka-server ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ eureka-server ---
+[INFO] skip non existing resourceDirectory C:\Users\CHAKRADHARBATTULA\Desktop\inventory-management-test\eureka-server\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ eureka-server ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.16:run (default-cli) < test-compile @ eureka-server <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.16:run (default-cli) @ eureka-server ---
+[INFO] Attaching agents: []
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-07-14T17:18:24.950+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.i.e.EurekaServerApplication            : Starting EurekaServerApplication using Java 25.0.1 with PID 10732 (C:\Users\CHAKRADHARBATTULA\Desktop\inventory-management-test\eureka-server\target\classes started by CHAKRADHARBATTULA in C:\Users\CHAKRADHARBATTULA\Desktop\inventory-management-test\eureka-server)
+2026-07-14T17:18:24.958+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.i.e.EurekaServerApplication            : No active profile set, falling back to 1 default profile: "default"
+2026-07-14T17:18:25.219+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Fetching config from server at : http://localhost:8888
+2026-07-14T17:18:25.220+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/eureka-server/default": Connection refused: getsockopt. Will be trying the next url if available
+2026-07-14T17:18:25.220+05:30  WARN 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Could not locate PropertySource ([ConfigServerConfigDataResource@1144cd9c uris = array<String>['http://localhost:8888'], optional = true, profiles = 'default']): I/O error on GET request for "http://localhost:8888/eureka-server/default": Connection refused: getsockopt
+2026-07-14T17:18:25.221+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Fetching config from server at : http://localhost:8888
+2026-07-14T17:18:25.221+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/eureka-server/default": Connection refused: getsockopt. Will be trying the next url if available
+2026-07-14T17:18:25.221+05:30  WARN 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Could not locate PropertySource ([ConfigServerConfigDataResource@64cb6a40 uris = array<String>['http://localhost:8888'], optional = true, profiles = 'default']): I/O error on GET request for "http://localhost:8888/eureka-server/default": Connection refused: getsockopt
+2026-07-14T17:18:25.222+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Fetching config from server at : http://localhost:8888
+2026-07-14T17:18:25.222+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/eureka-server/default": Connection refused: getsockopt. Will be trying the next url if available
+2026-07-14T17:18:25.222+05:30  WARN 10732 --- [eureka-server] [  restartedMain] o.s.c.c.c.ConfigServerConfigDataLoader   : Could not locate PropertySource ([ConfigServerConfigDataResource@1f7941de uris = array<String>['http://localhost:8888'], optional = true, profiles = 'default']): I/O error on GET request for "http://localhost:8888/eureka-server/default": Connection refused: getsockopt
+2026-07-14T17:18:25.231+05:30  INFO 10732 --- [eureka-server] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-14T17:18:25.231+05:30  INFO 10732 --- [eureka-server] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-14T17:18:27.948+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.cloud.context.scope.GenericScope     : BeanFactory id=4933745f-e6a8-36df-b032-2b8012872bab
+2026-07-14T17:18:28.911+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8761 (http)
+2026-07-14T17:18:28.941+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-14T17:18:28.942+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-07-14T17:18:29.101+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-14T17:18:29.104+05:30  INFO 10732 --- [eureka-server] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3866 ms
+2026-07-14T17:18:31.458+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON encoding codec LegacyJacksonJson
+2026-07-14T17:18:31.460+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON decoding codec LegacyJacksonJson
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider (file:/C:/Users/CHAKRADHARBATTULA/.m2/repository/com/thoughtworks/xstream/xstream/1.4.21/xstream-1.4.21.jar)
+WARNING: Please consider reporting this to the maintainers of class com.thoughtworks.xstream.converters.reflection.SunUnsafeReflectionProvider
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+2026-07-14T17:18:31.880+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.d.provider.DiscoveryJerseyProvider   : Using XML encoding codec XStreamXml
+2026-07-14T17:18:31.880+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.d.provider.DiscoveryJerseyProvider   : Using XML decoding codec XStreamXml
+2026-07-14T17:18:33.148+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-07-14T17:18:33.231+05:30  WARN 10732 --- [eureka-server] [  restartedMain] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-07-14T17:18:33.266+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-07-14T17:18:33.301+05:30  INFO 10732 --- [eureka-server] [  restartedMain] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-07-14T17:18:33.301+05:30  INFO 10732 --- [eureka-server] [  restartedMain] com.netflix.discovery.DiscoveryClient    : Client configured to neither register nor query for data.
+2026-07-14T17:18:33.303+05:30  INFO 10732 --- [eureka-server] [  restartedMain] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1784029713303 with initial instances count: 0
+2026-07-14T17:18:33.367+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.eureka.DefaultEurekaServerContext    : Initializing ...
+2026-07-14T17:18:33.369+05:30  WARN 10732 --- [eureka-server] [  restartedMain] c.n.eureka.cluster.PeerEurekaNodes       : The replica size seems to be empty. Check the route 53 DNS Registry
+2026-07-14T17:18:33.385+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.e.registry.AbstractInstanceRegistry  : Finished initializing remote region registries. All known remote regions: []
+2026-07-14T17:18:33.385+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.n.eureka.DefaultEurekaServerContext    : Initialized
+2026-07-14T17:18:33.407+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-07-14T17:18:33.480+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application EUREKA-SERVER with eureka with status UP
+2026-07-14T17:18:33.496+05:30  INFO 10732 --- [eureka-server] [      Thread-15] o.s.c.n.e.server.EurekaServerBootstrap   : isAws returned false
+2026-07-14T17:18:33.496+05:30  INFO 10732 --- [eureka-server] [      Thread-15] o.s.c.n.e.server.EurekaServerBootstrap   : Initialized server context
+2026-07-14T17:18:33.497+05:30  INFO 10732 --- [eureka-server] [      Thread-15] c.n.e.r.PeerAwareInstanceRegistryImpl    : Got 1 instances from neighboring DS node
+2026-07-14T17:18:33.497+05:30  INFO 10732 --- [eureka-server] [      Thread-15] c.n.e.r.PeerAwareInstanceRegistryImpl    : Renew threshold is: 1
+2026-07-14T17:18:33.497+05:30  INFO 10732 --- [eureka-server] [      Thread-15] c.n.e.r.PeerAwareInstanceRegistryImpl    : Changing status to UP
+2026-07-14T17:18:33.501+05:30  INFO 10732 --- [eureka-server] [      Thread-15] e.s.EurekaServerInitializerConfiguration : Started Eureka Server
+2026-07-14T17:18:33.517+05:30  INFO 10732 --- [eureka-server] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8761 (http) with context path '/'
+2026-07-14T17:18:33.519+05:30  INFO 10732 --- [eureka-server] [  restartedMain] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8761
+2026-07-14T17:18:33.549+05:30  INFO 10732 --- [eureka-server] [  restartedMain] c.i.e.EurekaServerApplication            : Started EurekaServerApplication in 11.688 seconds (process running for 14.013)
+2026-07-14T17:18:33.927+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-14T17:18:33.928+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-14T17:18:33.930+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-07-14T17:19:01.984+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-4] c.n.e.registry.AbstractInstanceRegistry  : Registered instance API-GATEWAY/HDLCAMPUS15253.Virtusa.com:api-gateway:8080 with status UP (replication=false)
+2026-07-14T17:19:02.611+05:30  WARN 10732 --- [eureka-server] [nio-8761-exec-6] c.n.e.registry.AbstractInstanceRegistry  : DS: Registry: lease doesn't exist, registering resource: ADMIN-SERVER - HDLCAMPUS15253.Virtusa.com:admin-server:8090
+2026-07-14T17:19:02.611+05:30  WARN 10732 --- [eureka-server] [nio-8761-exec-6] c.n.eureka.resources.InstanceResource    : Not Found (Renew): ADMIN-SERVER - HDLCAMPUS15253.Virtusa.com:admin-server:8090
+2026-07-14T17:19:02.666+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-7] c.n.e.registry.AbstractInstanceRegistry  : Registered instance ADMIN-SERVER/HDLCAMPUS15253.Virtusa.com:admin-server:8090 with status UP (replication=false)
+2026-07-14T17:19:02.688+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-8] c.n.e.registry.AbstractInstanceRegistry  : Registered instance ADMIN-SERVER/HDLCAMPUS15253.Virtusa.com:admin-server:8090 with status UP (replication=false)
+2026-07-14T17:19:12.499+05:30  INFO 10732 --- [eureka-server] [io-8761-exec-10] c.n.e.registry.AbstractInstanceRegistry  : Registered instance AUTH-SERVICE/HDLCAMPUS15253.Virtusa.com:auth-service:8089 with status UP (replication=false)
+2026-07-14T17:19:33.507+05:30  INFO 10732 --- [eureka-server] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-07-14T21:04:20.934+05:30  INFO 10732 --- [eureka-server] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 13427427ms
+2026-07-15T11:19:59.819+05:30  INFO 10732 --- [eureka-server] [io-8761-exec-10] c.n.e.registry.AbstractInstanceRegistry  : Registered instance MOVEMENT-SERVICE/HDLCAMPUS15253:movement-service:8084 with status UP (replication=false)
+2026-07-15T11:19:59.819+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-9] c.n.e.registry.AbstractInstanceRegistry  : Registered instance REPLENISHMENT-SERVICE/localhost:replenishment-service:8086 with status UP (replication=false)
+2026-07-15T11:20:04.470+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-7] c.n.e.registry.AbstractInstanceRegistry  : Registered instance INVENTORY-SERVICE/HDLCAMPUS15253:inventory-service:8085 with status UP (replication=false)
+2026-07-15T11:20:19.803+05:30  INFO 10732 --- [eureka-server] [nio-8761-exec-1] c.n.e.registry.AbstractInstanceRegistry  : Registered instance REPORTING-SERVICE/HDLCAMPUS15253.Virtusa.com:reporting-service:8087 with status UP (replication=false)
+2026-07-15T11:20:24.843+05:30  INFO 10732 --- [eureka-server] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 51307026ms

@@ -1,0 +1,159 @@
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.inventory:product-service >--------------------
+[INFO] Building product-service 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.16:run (default-cli) > test-compile @ product-service >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ product-service ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ product-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ product-service ---
+[INFO] skip non existing resourceDirectory C:\Users\CHAKRADHARBATTULA\Desktop\inventory-management-test\product-service\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ product-service ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 3 source files with javac [debug parameters release 17] to target\test-classes
+[INFO] Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING : 
+[INFO] -------------------------------------------------------------
+[WARNING] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[30,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[INFO] 1 warning
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[42,21] cannot find symbol
+  symbol:   method setProductCode(java.lang.String)
+  location: variable testResponse of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[43,21] cannot find symbol
+  symbol:   method setName(java.lang.String)
+  location: variable testResponse of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[44,21] cannot find symbol
+  symbol:   method setBasePrice(java.math.BigDecimal)
+  location: variable testResponse of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[60,16] cannot find symbol
+  symbol:   method setProductCode(java.lang.String)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[61,16] cannot find symbol
+  symbol:   method setName(java.lang.String)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[62,16] cannot find symbol
+  symbol:   method setCategory(java.lang.String)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[63,16] cannot find symbol
+  symbol:   method setBasePrice(java.math.BigDecimal)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[38,20] cannot find symbol
+  symbol:   method setProductCode(java.lang.String)
+  location: variable testProduct of type com.inventory.productservice.entity.Product
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[39,20] cannot find symbol
+  symbol:   method setName(java.lang.String)
+  location: variable testProduct of type com.inventory.productservice.entity.Product
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[40,33] incompatible types: java.lang.String cannot be converted to com.inventory.productservice.entity.Category
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[41,20] cannot find symbol
+  symbol:   method setBasePrice(java.math.BigDecimal)
+  location: variable testProduct of type com.inventory.productservice.entity.Product
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[48,16] cannot find symbol
+  symbol:   method setProductCode(java.lang.String)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[49,16] cannot find symbol
+  symbol:   method setName(java.lang.String)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[50,16] cannot find symbol
+  symbol:   method setCategory(java.lang.String)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[51,16] cannot find symbol
+  symbol:   method setBasePrice(java.math.BigDecimal)
+  location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[53,31] cannot find symbol
+  symbol:   method existsByProductCode(java.lang.String)
+  location: variable productRepository of type com.inventory.productservice.repository.ProductRepository
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[59,42] cannot find symbol
+  symbol:   method getProductCode()
+  location: variable response of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[60,46] cannot find symbol
+  symbol:   method getName()
+  location: variable response of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[72,42] cannot find symbol
+  symbol:   method getProductCode()
+  location: variable response of type com.inventory.productservice.dto.response.ProductResponse
+[INFO] 19 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  16.368 s
+[INFO] Finished at: 2026-07-14T17:19:37+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:testCompile (default-testCompile) on project product-service: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[42,21] cannot find symbol
+[ERROR]   symbol:   method setProductCode(java.lang.String)
+[ERROR]   location: variable testResponse of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[43,21] cannot find symbol
+[ERROR]   symbol:   method setName(java.lang.String)
+[ERROR]   location: variable testResponse of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[44,21] cannot find symbol
+[ERROR]   symbol:   method setBasePrice(java.math.BigDecimal)
+[ERROR]   location: variable testResponse of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[60,16] cannot find symbol
+[ERROR]   symbol:   method setProductCode(java.lang.String)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[61,16] cannot find symbol
+[ERROR]   symbol:   method setName(java.lang.String)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[62,16] cannot find symbol
+[ERROR]   symbol:   method setCategory(java.lang.String)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/controller/ProductControllerTest.java:[63,16] cannot find symbol
+[ERROR]   symbol:   method setBasePrice(java.math.BigDecimal)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[38,20] cannot find symbol
+[ERROR]   symbol:   method setProductCode(java.lang.String)
+[ERROR]   location: variable testProduct of type com.inventory.productservice.entity.Product
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[39,20] cannot find symbol
+[ERROR]   symbol:   method setName(java.lang.String)
+[ERROR]   location: variable testProduct of type com.inventory.productservice.entity.Product
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[40,33] incompatible types: java.lang.String cannot be converted to com.inventory.productservice.entity.Category
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[41,20] cannot find symbol
+[ERROR]   symbol:   method setBasePrice(java.math.BigDecimal)
+[ERROR]   location: variable testProduct of type com.inventory.productservice.entity.Product
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[48,16] cannot find symbol
+[ERROR]   symbol:   method setProductCode(java.lang.String)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[49,16] cannot find symbol
+[ERROR]   symbol:   method setName(java.lang.String)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[50,16] cannot find symbol
+[ERROR]   symbol:   method setCategory(java.lang.String)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[51,16] cannot find symbol
+[ERROR]   symbol:   method setBasePrice(java.math.BigDecimal)
+[ERROR]   location: variable request of type com.inventory.productservice.dto.request.CreateProductRequest
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[53,31] cannot find symbol
+[ERROR]   symbol:   method existsByProductCode(java.lang.String)
+[ERROR]   location: variable productRepository of type com.inventory.productservice.repository.ProductRepository
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[59,42] cannot find symbol
+[ERROR]   symbol:   method getProductCode()
+[ERROR]   location: variable response of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[60,46] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable response of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] /C:/Users/CHAKRADHARBATTULA/Desktop/inventory-management-test/product-service/src/test/java/com/inventory/productservice/service/ProductServiceTest.java:[72,42] cannot find symbol
+[ERROR]   symbol:   method getProductCode()
+[ERROR]   location: variable response of type com.inventory.productservice.dto.response.ProductResponse
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
